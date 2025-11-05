@@ -1,0 +1,22 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "browser-worker",
+	"main": "src/index.ts",
+	"compatibility_date": "2025-11-05",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"browser": {
+		"binding": "MYBROWSER"
+	},
+	"observability": {
+		"enabled": true
+	},
+	"kv_namespaces": [
+		{
+			"binding": "BROWSER_KV_DEMO",
+			"id": "309a38b3a8d64a4ba848285065832113",
+			"remote": true
+		}
+	]
+}
