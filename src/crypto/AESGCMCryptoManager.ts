@@ -1,4 +1,4 @@
-import {ICryptoManager} from '@/crypto/ICryptoManager'
+import { ICryptoManager } from '@/crypto/ICryptoManager';
 
 export class AESGCMCryptoManager extends ICryptoManager {
   private key: CryptoKey;
@@ -6,14 +6,14 @@ export class AESGCMCryptoManager extends ICryptoManager {
   static importKeyFromB64(b64Key: string): Promise<CryptoKey> {
     const jwk = JSON.parse(atob(b64Key));
     return crypto.subtle.importKey(
-      "jwk",
+      'jwk',
       jwk,
       {
-        name: "AES-GCM",
+        name: 'AES-GCM',
         length: 256,
       },
       true,
-      ["encrypt", "decrypt"]
+      ['encrypt', 'decrypt'],
     );
   }
 
@@ -32,25 +32,25 @@ export class AESGCMCryptoManager extends ICryptoManager {
     } else {
       cryptoKey = await crypto.subtle.generateKey(
         {
-          name: "AES-GCM",
+          name: 'AES-GCM',
           length: 256,
         },
         true,
-        ["encrypt", "decrypt"]
+        ['encrypt', 'decrypt'],
       );
     }
     return new AESGCMCryptoManager(cryptoKey);
   }
 
-  async encryptData(data: ArrayBuffer): Promise<{ iv: ArrayBuffer, encryptedData: ArrayBuffer }> {
+  async encryptData(data: ArrayBuffer): Promise<{ iv: ArrayBuffer; encryptedData: ArrayBuffer }> {
     const iv = crypto.getRandomValues(new Uint8Array(12)); // AES-GCM recommends 12-byte IV
     const encryptedData = await crypto.subtle.encrypt(
       {
-        name: "AES-GCM",
+        name: 'AES-GCM',
         iv: iv,
       },
       this.key,
-      data
+      data,
     );
     return { iv: iv.buffer, encryptedData };
   }
@@ -58,20 +58,17 @@ export class AESGCMCryptoManager extends ICryptoManager {
   async decryptData(encryptedData: ArrayBuffer, iv: ArrayBuffer): Promise<ArrayBuffer> {
     const decryptedData = await crypto.subtle.decrypt(
       {
-        name: "AES-GCM",
+        name: 'AES-GCM',
         iv: iv,
       },
       this.key,
-      encryptedData
+      encryptedData,
     );
     return decryptedData;
   }
 
   async exportKey(): Promise<string> {
-    const jwk = await crypto.subtle.exportKey("jwk", this.key);
+    const jwk = await crypto.subtle.exportKey('jwk', this.key);
     return btoa(JSON.stringify(jwk));
   }
-
-
-
 }

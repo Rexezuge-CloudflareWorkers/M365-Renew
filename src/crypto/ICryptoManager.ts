@@ -1,3 +1,1 @@
-export abstract class ICryptoManager{
-    
-}
+export abstract class ICryptoManager {}

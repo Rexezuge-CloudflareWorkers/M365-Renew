@@ -1,17 +1,15 @@
 {
-	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "browser-worker",
-	"main": "src/index.ts",
-	"compatibility_date": "2025-11-05",
-	  "workers_dev": false,
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "browser-worker",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-11-05",
+  "workers_dev": false,
   "preview_urls": false,
-	"compatibility_flags": [
-		"nodejs_compat"
-	],
-	"browser": {
-		"binding": "MYBROWSER"
-	},
-	"observability": {
-		"enabled": true
-	},
+  "compatibility_flags": ["nodejs_compat"],
+  "browser": {
+    "binding": "MYBROWSER",
+  },
+  "observability": {
+    "enabled": true,
+  },
 }

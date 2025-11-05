@@ -1,19 +1,29 @@
 {
-	"name": "browser-worker",
-	"version": "0.0.0",
-	"private": true,
-	"scripts": {
-		"deploy": "wrangler deploy",
-		"dev": "wrangler dev",
-		"start": "wrangler dev",
-		"test": "vitest --run || 1",
-		"cf-typegen": "wrangler types"
-	},
-	"devDependencies": {
-		"@cloudflare/puppeteer": "^1.0.4",
-		"@cloudflare/vitest-pool-workers": "^0.8.19",
-		"typescript": "^5.5.2",
-		"vitest": "~3.2.0",
-		"wrangler": "^4.45.4"
-	}
+  "name": "browser-worker",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "cf-typegen": "wrangler types",
+    "predeploy": "npm install && npm run prettier && npm run lint",
+    "deploy": "wrangler deploy --dry-run",
+    "postdeploy": "wrangler deploy",
+    "prettier": "prettier --write .",
+    "lint": "eslint --ext .ts,.tsx --fix .",
+    "dev": "wrangler dev",
+    "test": "vitest --run || 1"
+  },
+  "devDependencies": {
+    "@cloudflare/puppeteer": "^1.0.4",
+    "@cloudflare/vitest-pool-workers": "^0.10.4",
+    "typescript": "^5.5.2",
+    "vitest": "^4.0.7",
+    "wrangler": "^4.45.4",
+    "eslint": "^9.39.x",
+    "eslint-config-prettier": "^10.1.x",
+    "eslint-plugin-prettier": "^5.5.x",
+    "globals": "^16.5.x",
+    "prettier": "^3.6.x",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.46.x"
+  }
 }
