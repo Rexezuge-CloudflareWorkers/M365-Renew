@@ -1,2 +1,2 @@
-export * from './AESGCMCryptoManager';
-export * from './ICryptoManager';
+export { AESGCMCryptoManager } from './AESGCMCryptoManager';
+export { ICryptoManager } from './ICryptoManager';
