@@ -6,7 +6,7 @@ class M365LoginUtil {
 
   protected static M365_LOGIN_URL_NORMALIZED: string = new URL(this.M365_LOGIN_URL).toString();
 
-  public static async login(browser: Fetcher, email: string, password: string, totpKey: string): Promise<boolean> {
+  public static async login(browser: Fetcher, totpGenerator: Fetcher, email: string, password: string, totpKey: string): Promise<boolean> {
     const browserInstance = await puppeteer.launch(browser);
     const page = await browserInstance.newPage();
 
@@ -25,8 +25,8 @@ class M365LoginUtil {
       await SleepUtil.sleep(1);
 
       // Step 4: Generate and enter TOTP
-      const totpUrl = `https://totp-generator.2ba35e4d622c4747d091cb066978b585.workers.dev/generate-totp?key=${totpKey}&digits=6&period=30&algorithm=SHA-1`;
-      const response = await fetch(totpUrl);
+      const totpUrl = `https://totp-generator.internal/generate-totp?key=${totpKey}&digits=6&period=30&algorithm=SHA-1`;
+      const response = await totpGenerator.fetch(totpUrl);
 
       if (!response.ok) {
         throw new Error('Failed to get TOTP');

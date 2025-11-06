@@ -42,7 +42,7 @@ export class LoginRoute extends OpenAPIRoute {
   async handle(c: Context<{ Bindings: Env }>) {
     const { email_address, password, totp_key } = await c.req.json();
 
-    const success = await M365LoginUtil.login(c.env.BROWSER, email_address, password, totp_key);
+    const success = await M365LoginUtil.login(c.env.BROWSER, c.env.TOTP_GENERATOR, email_address, password, totp_key);
 
     return c.json({
       success,

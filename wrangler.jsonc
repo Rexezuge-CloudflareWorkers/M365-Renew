@@ -28,6 +28,10 @@
       "binding": "SELF",
       "service": "m365-renew",
     },
+    {
+      "binding": "TOTP_GENERATOR",
+      "service": "totp-generator",
+    },
   ],
   "observability": {
     "enabled": true,
