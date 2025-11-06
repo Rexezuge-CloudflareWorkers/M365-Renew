@@ -1,18 +1,9 @@
-import { fromHono } from 'chanfana';
-import { Hono } from 'hono';
-import { GenerateKeyRoute } from './endpoints/generate-key';
-import { StoreCredentialsRoute } from './endpoints/store-credentials';
-import { GetCredentialsRoute } from './endpoints/get-credentials';
-import { Env } from './interfaces';
+import { AbstractWorker, M365RenewWorker } from '@/workers';
+import { Env } from '@/interfaces';
 
-const app = new Hono<{ Bindings: Env }>();
+const worker: AbstractWorker = new M365RenewWorker();
 
-const openapi = fromHono(app, {
-  docs_url: '/docs',
-});
-
-openapi.post('/api/admin/generate-key', GenerateKeyRoute);
-openapi.post('/api/credentials/store', StoreCredentialsRoute);
-openapi.get('/api/internal/credentials/:user_id', GetCredentialsRoute);
-
-export default openapi;
+export default {
+  fetch: (req: Request, env: Env, ctx: ExecutionContext) => worker.fetch(req, env, ctx),
+  scheduled: (event: ScheduledController, env: Env, ctx: ExecutionContext) => worker.scheduled(event, env, ctx),
+} satisfies ExportedHandler<Env>;
