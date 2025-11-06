@@ -47,10 +47,7 @@ class UserDAO {
   }
 
   public async updateUserStatus(userId: number, status: 'active' | 'disabled' | 'locked'): Promise<void> {
-    await this.database
-      .prepare(`UPDATE users SET status = ?, updated_at = datetime('now') WHERE user_id = ?`)
-      .bind(status, userId)
-      .run();
+    await this.database.prepare(`UPDATE users SET status = ?, updated_at = datetime('now') WHERE user_id = ?`).bind(status, userId).run();
   }
 }
 

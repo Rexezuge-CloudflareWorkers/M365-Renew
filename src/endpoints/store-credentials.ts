@@ -58,12 +58,7 @@ export class StoreCredentialsRoute extends OpenAPIRoute {
     const encryptedTotpKey = await encryptData(totp_key, key, ivBase64);
 
     const userDAO = new UserDAO(c.env.DB);
-    const userId = await userDAO.createUser(
-      encryptedEmail.encrypted,
-      encryptedPassword.encrypted,
-      encryptedTotpKey.encrypted,
-      ivBase64,
-    );
+    const userId = await userDAO.createUser(encryptedEmail.encrypted, encryptedPassword.encrypted, encryptedTotpKey.encrypted, ivBase64);
 
     return c.json({
       success: true,

@@ -26,11 +26,7 @@ class UserProcessingStateDAO {
     };
   }
 
-  public async upsertState(
-    userId: number,
-    processStatus: 'success' | 'failure' | 'skipped',
-    message?: string,
-  ): Promise<void> {
+  public async upsertState(userId: number, processStatus: 'success' | 'failure' | 'skipped', message?: string): Promise<void> {
     await this.database
       .prepare(
         `INSERT INTO user_processing_state (user_id, last_processed_at, last_process_status, last_message)

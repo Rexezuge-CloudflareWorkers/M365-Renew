@@ -7,11 +7,7 @@ class UserProcessingLogDAO {
     this.database = database;
   }
 
-  public async createLog(
-    userId: number,
-    processStatus: 'success' | 'failure' | 'skipped',
-    message?: string,
-  ): Promise<number> {
+  public async createLog(userId: number, processStatus: 'success' | 'failure' | 'skipped', message?: string): Promise<number> {
     const result = await this.database
       .prepare(
         `INSERT INTO user_processing_log (user_id, process_status, message)
