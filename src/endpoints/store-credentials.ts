@@ -2,6 +2,7 @@ import { OpenAPIRoute } from 'chanfana';
 import { Context } from 'hono';
 import { encryptData } from '../crypto/aes-gcm';
 import { Env } from '../interfaces';
+import { UserDAO } from '../dao';
 
 export class StoreCredentialsRoute extends OpenAPIRoute {
   schema = {
@@ -44,7 +45,6 @@ export class StoreCredentialsRoute extends OpenAPIRoute {
   async handle(c: Context<{ Bindings: Env }>) {
     const { email_address, password, totp_key } = await c.req.json();
 
-    // Get the AES key from Secrets Store
     const key = await c.env.AES_ENCRYPTION_KEY_SECRET.get();
     if (!key) {
       return c.json({ error: 'AES key not found. Please generate a key first.' }, 500);
@@ -57,18 +57,17 @@ export class StoreCredentialsRoute extends OpenAPIRoute {
     const encryptedPassword = await encryptData(password, key, ivBase64);
     const encryptedTotpKey = await encryptData(totp_key, key, ivBase64);
 
-    const result = await c.env.DB.prepare(
-      `
-      INSERT INTO users (encrypted_email_address, encrypted_password, encrypted_totp_key, salt)
-      VALUES (?, ?, ?, ?)
-    `,
-    )
-      .bind(encryptedEmail.encrypted, encryptedPassword.encrypted, encryptedTotpKey.encrypted, ivBase64)
-      .run();
+    const userDAO = new UserDAO(c.env.DB);
+    const userId = await userDAO.createUser(
+      encryptedEmail.encrypted,
+      encryptedPassword.encrypted,
+      encryptedTotpKey.encrypted,
+      ivBase64,
+    );
 
     return c.json({
       success: true,
-      user_id: result.meta.last_row_id,
+      user_id: userId,
     });
   }
 }

@@ -2,6 +2,7 @@ import { OpenAPIRoute } from 'chanfana';
 import { Context } from 'hono';
 import { decryptData } from '../crypto/aes-gcm';
 import { Env } from '../interfaces';
+import { UserDAO } from '../dao';
 
 export class GetCredentialsRoute extends OpenAPIRoute {
   schema = {
@@ -42,28 +43,21 @@ export class GetCredentialsRoute extends OpenAPIRoute {
   async handle(c: Context<{ Bindings: Env }>) {
     const { user_id } = c.req.param();
 
-    // Get the AES key from Secrets Store
     const key = await c.env.AES_ENCRYPTION_KEY_SECRET.get();
     if (!key) {
       return c.json({ error: 'AES key not found. Please generate a key first.' }, 500);
     }
 
-    const result = await c.env.DB.prepare(
-      `
-      SELECT encrypted_email_address, encrypted_password, encrypted_totp_key, salt
-      FROM users WHERE user_id = ?
-    `,
-    )
-      .bind(user_id)
-      .first();
+    const userDAO = new UserDAO(c.env.DB);
+    const user = await userDAO.getUserById(parseInt(user_id));
 
-    if (!result) {
+    if (!user) {
       return c.json({ error: 'User not found' }, 404);
     }
 
-    const email_address = await decryptData(result.encrypted_email_address, result.salt, key);
-    const password = await decryptData(result.encrypted_password, result.salt, key);
-    const totp_key = await decryptData(result.encrypted_totp_key, result.salt, key);
+    const email_address = await decryptData(user.encryptedEmailAddress, user.salt, key);
+    const password = await decryptData(user.encryptedPassword, user.salt, key);
+    const totp_key = await decryptData(user.encryptedTotpKey, user.salt, key);
 
     return c.json({
       email_address,
