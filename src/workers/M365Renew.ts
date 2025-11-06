@@ -4,7 +4,6 @@ import { Hono } from 'hono';
 import { GenerateKeyRoute } from '@/endpoints/generate-key';
 import { StoreCredentialsRoute } from '@/endpoints/store-credentials';
 import { GetCredentialsRoute } from '@/endpoints/get-credentials';
-import { Env } from '@/interfaces';
 
 class M365RenewWorker extends AbstractWorker {
   protected readonly app: Hono<{ Bindings: Env }>;

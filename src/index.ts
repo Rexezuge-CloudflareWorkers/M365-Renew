@@ -1,5 +1,4 @@
 import { AbstractWorker, M365RenewWorker } from '@/workers';
-import { Env } from '@/interfaces';
 
 const worker: AbstractWorker = new M365RenewWorker();
 

@@ -1,5 +1,3 @@
-import { Env } from '@/interfaces';
-
 abstract class AbstractWorker {
   protected printExecId(): string {
     const execId: string = crypto.randomUUID();
