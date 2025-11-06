@@ -10,7 +10,7 @@ npm install
 
 # Create Secrets Store
 echo "Creating Secrets Store..."
-npx wrangler secrets-store store create browser-worker-secrets
+npx wrangler secrets-store secret create $CF_STORE_ID --name browser-worker-secrets --value "PLACE_HOLDER" --scopes workers --remote
 
 # Create D1 database
 echo "Creating D1 database..."

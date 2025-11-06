@@ -13,13 +13,14 @@
     {
       "binding": "DB",
       "database_name": "browser-worker-db",
-      "database_id": "REPLACE_WITH_ACTUAL_DATABASE_ID"
+      "database_id": "1bb3e50e-ff7d-4665-99fd-630a6befa61c"
     }
   ],
-  "secrets_store": [
+  "secrets_store_secrets": [
     {
-      "binding": "SECRETS",
-      "store_name": "browser-worker-secrets"
+      "binding": "AES_ENCRYPTION_KEY_SECRET",
+      "store_id": "cea394c91b2a4c648bcc92bc998ffc5e",
+      "secret_name": "browser-worker-secrets"
     }
   ],
   "observability": {

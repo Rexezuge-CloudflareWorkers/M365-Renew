@@ -45,14 +45,17 @@ export class StoreCredentialsRoute extends OpenAPIRoute {
     const { email_address, password, totp_key } = await c.req.json();
     
     // Get the AES key from Secrets Store
-    const key = await c.env.SECRETS.get('AES_GCM_KEY');
+    const key = await c.env.AES_ENCRYPTION_KEY_SECRET.get();
     if (!key) {
       return c.json({ error: 'AES key not found. Please generate a key first.' }, 500);
     }
 
-    const encryptedEmail = await encryptData(email_address, key);
-    const encryptedPassword = await encryptData(password, key);
-    const encryptedTotpKey = await encryptData(totp_key, key);
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const ivBase64 = btoa(String.fromCharCode(...iv));
+    
+    const encryptedEmail = await encryptData(email_address, key, ivBase64);
+    const encryptedPassword = await encryptData(password, key, ivBase64);
+    const encryptedTotpKey = await encryptData(totp_key, key, ivBase64);
 
     const result = await c.env.DB.prepare(`
       INSERT INTO users (encrypted_email_address, encrypted_password, encrypted_totp_key, salt)
@@ -61,7 +64,7 @@ export class StoreCredentialsRoute extends OpenAPIRoute {
       encryptedEmail.encrypted,
       encryptedPassword.encrypted,
       encryptedTotpKey.encrypted,
-      encryptedEmail.iv
+      ivBase64
     ).run();
 
     return c.json({

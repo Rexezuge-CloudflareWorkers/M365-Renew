@@ -10,6 +10,7 @@
     "prettier": "prettier --write .",
     "lint": "eslint --ext .ts,.tsx --fix .",
     "dev": "wrangler dev",
+    "devRemote": "wrangler dev --remote",
     "test": "vitest --run || 1"
   },
   "dependencies": {
