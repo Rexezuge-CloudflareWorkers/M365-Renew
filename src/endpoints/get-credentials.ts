@@ -41,17 +41,21 @@ export class GetCredentialsRoute extends OpenAPIRoute {
 
   async handle(c: Context<{ Bindings: Env }>) {
     const { user_id } = c.req.param();
-    
+
     // Get the AES key from Secrets Store
     const key = await c.env.AES_ENCRYPTION_KEY_SECRET.get();
     if (!key) {
       return c.json({ error: 'AES key not found. Please generate a key first.' }, 500);
     }
 
-    const result = await c.env.DB.prepare(`
+    const result = await c.env.DB.prepare(
+      `
       SELECT encrypted_email_address, encrypted_password, encrypted_totp_key, salt
       FROM users WHERE user_id = ?
-    `).bind(user_id).first();
+    `,
+    )
+      .bind(user_id)
+      .first();
 
     if (!result) {
       return c.json({ error: 'User not found' }, 404);

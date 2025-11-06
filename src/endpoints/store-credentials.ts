@@ -43,7 +43,7 @@ export class StoreCredentialsRoute extends OpenAPIRoute {
 
   async handle(c: Context<{ Bindings: Env }>) {
     const { email_address, password, totp_key } = await c.req.json();
-    
+
     // Get the AES key from Secrets Store
     const key = await c.env.AES_ENCRYPTION_KEY_SECRET.get();
     if (!key) {
@@ -52,20 +52,19 @@ export class StoreCredentialsRoute extends OpenAPIRoute {
 
     const iv = crypto.getRandomValues(new Uint8Array(12));
     const ivBase64 = btoa(String.fromCharCode(...iv));
-    
+
     const encryptedEmail = await encryptData(email_address, key, ivBase64);
     const encryptedPassword = await encryptData(password, key, ivBase64);
     const encryptedTotpKey = await encryptData(totp_key, key, ivBase64);
 
-    const result = await c.env.DB.prepare(`
+    const result = await c.env.DB.prepare(
+      `
       INSERT INTO users (encrypted_email_address, encrypted_password, encrypted_totp_key, salt)
       VALUES (?, ?, ?, ?)
-    `).bind(
-      encryptedEmail.encrypted,
-      encryptedPassword.encrypted,
-      encryptedTotpKey.encrypted,
-      ivBase64
-    ).run();
+    `,
+    )
+      .bind(encryptedEmail.encrypted, encryptedPassword.encrypted, encryptedTotpKey.encrypted, ivBase64)
+      .run();
 
     return c.json({
       success: true,

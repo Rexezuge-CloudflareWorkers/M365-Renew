@@ -7,7 +7,7 @@ interface Env {
 export default {
   async fetch(request, env): Promise<Response> {
     let url = 'https://www.microsoft.com/cascadeauth/store/account/signin';
-    let img: Buffer;
+    const img: Buffer;
     url = new URL(url).toString(); // normalize
     const browser = await puppeteer.launch(env.MYBROWSER);
     const page = await browser.newPage();

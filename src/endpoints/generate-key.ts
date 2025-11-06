@@ -18,7 +18,7 @@ export class GenerateKeyRoute extends OpenAPIRoute {
               properties: {
                 success: { type: 'boolean' },
                 message: { type: 'string' },
-                key: {type:'string'},
+                key: { type: 'string' },
               },
             },
           },
@@ -29,14 +29,14 @@ export class GenerateKeyRoute extends OpenAPIRoute {
 
   async handle(c: Context<{ Bindings: Env }>) {
     const key = await generateAESGCMKey();
-    
+
     // Store the key in Secrets Store
     // await c.env.AES_ENCRYPTION_KEY_SECRET.put( key);
-    
+
     return c.json({
       success: true,
       message: 'AES-GCM key generated and stored successfully',
-      key:key,
+      key: key,
     });
   }
 }
