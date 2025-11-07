@@ -76,7 +76,7 @@ class M365RenewWorker extends AbstractWorker {
     }
 
     const apiKey = await env.MAIL_MEOW_API_SECRET.get();
-    await env.MAIL_MEOW.fetch(`/api/${apiKey}/email`, {
+    await env.MAIL_MEOW.fetch(`https://mail-meow.internal/api/${apiKey}/email`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
