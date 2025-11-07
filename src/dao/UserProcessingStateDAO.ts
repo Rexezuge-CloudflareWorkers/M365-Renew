@@ -29,15 +29,20 @@ class UserProcessingStateDAO {
   public async upsertState(userId: number, processStatus: 'success' | 'failure' | 'skipped', message?: string): Promise<void> {
     await this.database
       .prepare(
-        `INSERT INTO user_processing_state (user_id, last_processed_at, last_process_status, last_message)
-         VALUES (?, datetime('now'), ?, ?)
+        `INSERT INTO user_processing_state (user_id, last_processed_at, last_process_status, last_message, retry_count)
+         VALUES (?, datetime('now'), ?, ?, CASE WHEN ? = 'failure' THEN 1 ELSE 0 END)
          ON CONFLICT(user_id) DO UPDATE SET
            last_processed_at = datetime('now'),
            last_process_status = excluded.last_process_status,
            last_message = excluded.last_message,
+           retry_count = CASE 
+             WHEN excluded.last_process_status = 'failure' THEN retry_count + 1
+             WHEN excluded.last_process_status = 'success' THEN 0
+             ELSE retry_count
+           END,
            updated_at = datetime('now')`,
       )
-      .bind(userId, processStatus, message || null)
+      .bind(userId, processStatus, message || null, processStatus)
       .run();
   }
 }
