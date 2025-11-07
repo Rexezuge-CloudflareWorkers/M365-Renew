@@ -55,7 +55,7 @@ class UserDAO {
         WHERE u.status = 'active'
           AND (ups.last_processed_at IS NULL 
                OR ups.last_processed_at < datetime('now', '-1 hour')
-               OR (ups.retry_count < 3 AND ups.last_process_status = 'failure' AND ups.last_processed_at < datetime('now', '-24 hours')))
+               OR (ups.retry_count < 3 AND ups.last_process_status = 'failure' AND ups.last_processed_at < datetime('now', '-20 hours')))
         ORDER BY ups.last_processed_at ASC NULLS FIRST
         LIMIT 1
       `,
