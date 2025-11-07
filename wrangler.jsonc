@@ -22,6 +22,11 @@
       "store_id": "cea394c91b2a4c648bcc92bc998ffc5e",
       "secret_name": "m365-renew-aes-encryption-key",
     },
+    {
+      "binding": "MAIL_MEOW_API_SECRET",
+      "store_id": "cea394c91b2a4c648bcc92bc998ffc5e",
+      "secret_name": "mail-meow-api",
+    },
   ],
   "services": [
     {
@@ -31,6 +36,10 @@
     {
       "binding": "TOTP_GENERATOR",
       "service": "totp-generator",
+    },
+    {
+      "binding": "MAIL_MEOW",
+      "service": "mail-meow",
     },
   ],
   "observability": {
@@ -51,5 +60,8 @@
   },
   "placement": {
     "mode": "off",
+  },
+  "vars": {
+    "NOTIFICATION_EMAIL_ADDRESS": "user@example.com",
   },
 }
