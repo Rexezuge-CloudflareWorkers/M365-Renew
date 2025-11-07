@@ -13,18 +13,18 @@
     {
       "binding": "DB",
       "database_name": "m365-renew-db",
-      "database_id": "c80a4fe7-bde3-4491-a36d-fac5160778e4",
+      "database_id": "00000000-0000-0000-0000-000000000000",
     },
   ],
   "secrets_store_secrets": [
     {
       "binding": "AES_ENCRYPTION_KEY_SECRET",
-      "store_id": "cea394c91b2a4c648bcc92bc998ffc5e",
+      "store_id": "00000000-0000-0000-0000-000000000000",
       "secret_name": "m365-renew-aes-encryption-key",
     },
     {
       "binding": "MAIL_MEOW_API_SECRET",
-      "store_id": "cea394c91b2a4c648bcc92bc998ffc5e",
+      "store_id": "00000000-0000-0000-0000-000000000000",
       "secret_name": "mail-meow-api",
     },
   ],
