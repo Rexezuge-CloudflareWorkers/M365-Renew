@@ -12,15 +12,15 @@
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "browser-worker-db",
-      "database_id": "1bb3e50e-ff7d-4665-99fd-630a6befa61c",
+      "database_name": "m365-renew-db",
+      "database_id": "c80a4fe7-bde3-4491-a36d-fac5160778e4",
     },
   ],
   "secrets_store_secrets": [
     {
       "binding": "AES_ENCRYPTION_KEY_SECRET",
       "store_id": "cea394c91b2a4c648bcc92bc998ffc5e",
-      "secret_name": "browser-worker-secrets",
+      "secret_name": "m365-renew-aes-encryption-key",
     },
   ],
   "services": [

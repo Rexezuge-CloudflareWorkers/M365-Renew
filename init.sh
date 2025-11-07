@@ -10,11 +10,11 @@ npm install
 
 # Create Secrets Store
 echo "Creating Secrets Store..."
-npx wrangler secrets-store secret create $CF_STORE_ID --name browser-worker-secrets --value "PLACE_HOLDER" --scopes workers --remote
+npx wrangler secrets-store secret create $CF_STORE_ID --name m365-renew-aes-encryption-key --value "PLACE_HOLDER" --scopes workers --remote
 
 # Create D1 database
 echo "Creating D1 database..."
-DB_OUTPUT=$(npx wrangler d1 create browser-worker-db)
+DB_OUTPUT=$(npx wrangler d1 create m365-renew-db)
 DB_ID=$(echo "$DB_OUTPUT" | grep -o 'database_id = "[^"]*"' | cut -d'"' -f2)
 
 if [ -n "$DB_ID" ]; then
@@ -26,7 +26,7 @@ if [ -n "$DB_ID" ]; then
     
     # Apply migrations
     echo "Applying database migrations..."
-    npx wrangler d1 migrations apply browser-worker-db
+    npx wrangler d1 migrations apply m365-renew-db --remote
     
     echo "✅ Database setup complete!"
 else
