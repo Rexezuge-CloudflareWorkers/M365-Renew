@@ -1,7 +1,6 @@
 import { OpenAPIRoute } from 'chanfana';
 import { Context } from 'hono';
 import { DefaultInternalServerError, InternalServerError, IServiceError } from '@/error';
-import { VoidUtil } from '@/utils';
 
 abstract class IAPIRoute<TRequest extends IRequest, TResponse extends IResponse, TEnv extends IEnv> extends OpenAPIRoute {
   async handle(c: APIContext<TEnv>) {
@@ -9,8 +8,7 @@ abstract class IAPIRoute<TRequest extends IRequest, TResponse extends IResponse,
       let body: unknown = {};
       try {
         body = await c.req.json();
-      } catch (_ignored: unknown) {
-        VoidUtil.void(_ignored);
+      } catch {
         body = {};
       }
       const request: TRequest = body as TRequest;

@@ -1,6 +1,5 @@
 import { IAPIRoute, IRequest, IResponse, IEnv, APIContext } from './IAPIRoute';
 import { M365LoginUtil } from '@/utils';
-import { VoidUtil } from '@/utils';
 
 interface LoginRequest extends IRequest {
   email_address: string;
@@ -53,7 +52,6 @@ export class LoginRoute extends IAPIRoute<LoginRequest, LoginResponse, LoginEnv>
   };
 
   protected async handleRequest(request: LoginRequest, env: Env, _ctx: APIContext<LoginEnv>): Promise<LoginResponse> {
-    VoidUtil.void(_ctx);
     const success: boolean = await M365LoginUtil.login(
       env.BROWSER,
       env.TOTP_GENERATOR,

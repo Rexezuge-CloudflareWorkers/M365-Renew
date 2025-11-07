@@ -32,7 +32,7 @@ class M365LoginUtil {
         throw new Error('Failed to get TOTP');
       }
 
-      const data: unknown = await response.json();
+      const data = (await response.json()) as { otp: string };
       const otp: string = data.otp;
 
       await page.type('input[name="otc"]', otp, { delay: 50 });

@@ -1,7 +1,7 @@
 export async function generateAESGCMKey(): Promise<string> {
-  const key = await crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, true, ['encrypt', 'decrypt']);
+  const key = (await crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, true, ['encrypt', 'decrypt'])) as CryptoKey;
   const exported = await crypto.subtle.exportKey('raw', key);
-  return btoa(String.fromCharCode(...new Uint8Array(exported)));
+  return btoa(String.fromCharCode(...new Uint8Array(exported as ArrayBuffer)));
 }
 
 export async function encryptData(data: string, keyBase64: string, ivBase64?: string): Promise<{ encrypted: string; iv: string }> {

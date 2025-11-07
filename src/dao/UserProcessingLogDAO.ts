@@ -20,12 +20,12 @@ class UserProcessingLogDAO {
   }
 
   public async getLogsByUserId(userId: number): Promise<UserProcessingLog[]> {
-    const results: UserProcessingLogInternal[] = await this.database
+    const results = await this.database
       .prepare(`SELECT * FROM user_processing_log WHERE user_id = ? ORDER BY processed_at DESC`)
       .bind(userId)
       .all<UserProcessingLogInternal>();
 
-    return results.map((result) => ({
+    return results.results.map((result) => ({
       logId: result.log_id,
       userId: result.user_id,
       processedAt: result.processed_at,

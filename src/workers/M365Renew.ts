@@ -6,7 +6,6 @@ import { StoreCredentialsRoute } from '@/endpoints/store-credentials';
 import { GetCredentialsRoute } from '@/endpoints/get-credentials';
 import { LoginRoute } from '@/endpoints/login';
 import { UserDAO, UserProcessingStateDAO, UserProcessingLogDAO } from '@/dao';
-import { VoidUtil } from '@/utils';
 import { User } from '@/model';
 
 class M365RenewWorker extends AbstractWorker {
@@ -37,7 +36,6 @@ class M365RenewWorker extends AbstractWorker {
   }
 
   protected async handleScheduled(_event: ScheduledController, env: Env, _ctx: ExecutionContext): Promise<void> {
-    VoidUtil.void(_event, _ctx);
     const userDAO = new UserDAO(env.DB);
     const stateDAO = new UserProcessingStateDAO(env.DB);
     const logDAO = new UserProcessingLogDAO(env.DB);
@@ -60,10 +58,10 @@ class M365RenewWorker extends AbstractWorker {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(credentials),
       });
-      const { success, message } = await loginResponse.json();
+      const loginResult = (await loginResponse.json()) as { success: boolean; message: string };
 
-      status = success ? 'success' : 'failure';
-      result_message = success ? 'Login successful' : message;
+      status = loginResult.success ? 'success' : 'failure';
+      result_message = loginResult.success ? 'Login successful' : loginResult.message;
 
       await stateDAO.upsertState(user.userId, status, result_message);
       await logDAO.createLog(user.userId, status, result_message);

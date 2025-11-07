@@ -2,7 +2,6 @@ import { IAPIRoute, IRequest, IResponse, IEnv, APIContext } from './IAPIRoute';
 import { decryptData } from '@/crypto/aes-gcm';
 import { UserDAO } from '@/dao';
 import { InternalServerError, BadRequestError } from '@/error';
-import { VoidUtil } from '@/utils';
 import { User } from '@/model';
 
 interface GetCredentialsRequest extends IRequest {
@@ -71,7 +70,6 @@ export class GetCredentialsRoute extends IAPIRoute<GetCredentialsRequest, GetCre
     env: Env,
     _ctx: APIContext<GetCredentialsEnv>,
   ): Promise<GetCredentialsResponse> {
-    VoidUtil.void(_ctx);
     const key: string = await env.AES_ENCRYPTION_KEY_SECRET.get();
     if (!key) {
       throw new InternalServerError('AES key not found. Please generate a key first.');

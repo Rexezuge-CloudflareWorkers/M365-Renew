@@ -8,7 +8,7 @@ abstract class AbstractWorker {
   public async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url: URL = new URL(request.url);
     if ('/__scheduled' === url.pathname) {
-      await this.scheduled(null, env, ctx);
+      await this.scheduled({} as ScheduledController, env, ctx);
       return new Response(null, { status: 204 });
     }
 

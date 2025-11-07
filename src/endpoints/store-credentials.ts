@@ -2,7 +2,6 @@ import { IAPIRoute, IRequest, IResponse, IEnv, APIContext } from './IAPIRoute';
 import { encryptData } from '@/crypto/aes-gcm';
 import { UserDAO } from '@/dao';
 import { InternalServerError } from '@/error';
-import { VoidUtil } from '@/utils';
 
 interface StoreCredentialsRequest extends IRequest {
   email_address: string;
@@ -61,7 +60,6 @@ export class StoreCredentialsRoute extends IAPIRoute<StoreCredentialsRequest, St
     env: Env,
     _ctx: APIContext<StoreCredentialsEnv>,
   ): Promise<StoreCredentialsResponse> {
-    VoidUtil.void(_ctx);
     const key: string = await env.AES_ENCRYPTION_KEY_SECRET.get();
     if (!key) {
       throw new InternalServerError('AES key not found. Please generate a key first.');
