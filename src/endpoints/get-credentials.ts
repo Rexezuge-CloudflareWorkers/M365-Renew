@@ -1,10 +1,23 @@
-import { OpenAPIRoute } from 'chanfana';
-import { Context } from 'hono';
-import { decryptData } from '../crypto/aes-gcm';
-import { Env } from '../interfaces';
-import { UserDAO } from '../dao';
+import { IAPIRoute, IRequest, IResponse, IEnv, APIContext } from './IAPIRoute';
+import { decryptData } from '@/crypto/aes-gcm';
+import { UserDAO } from '@/dao';
+import { InternalServerError, BadRequestError } from '@/error';
+import { VoidUtil } from '@/utils';
 
-export class GetCredentialsRoute extends OpenAPIRoute {
+interface GetCredentialsRequest extends IRequest {
+  user_id: string;
+}
+
+interface GetCredentialsResponse extends IResponse {
+  email_address: string;
+  password: string;
+  totp_key: string;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+interface GetCredentialsEnv extends IEnv {}
+
+export class GetCredentialsRoute extends IAPIRoute<GetCredentialsRequest, GetCredentialsResponse, GetCredentialsEnv> {
   schema = {
     tags: ['Internal'],
     summary: 'Get User Credentials',
@@ -12,10 +25,10 @@ export class GetCredentialsRoute extends OpenAPIRoute {
     parameters: [
       {
         name: 'user_id',
-        in: 'path',
+        in: 'path' as const,
         description: 'User ID to retrieve credentials for',
         required: true,
-        schema: { type: 'string' },
+        schema: { type: 'string' as const },
       },
     ],
     responses: {
@@ -24,45 +37,60 @@ export class GetCredentialsRoute extends OpenAPIRoute {
         content: {
           'application/json': {
             schema: {
-              type: 'object',
+              type: 'object' as const,
               properties: {
-                email_address: { type: 'string' },
-                password: { type: 'string' },
-                totp_key: { type: 'string' },
+                email_address: { type: 'string' as const },
+                password: { type: 'string' as const },
+                totp_key: { type: 'string' as const },
               },
             },
           },
         },
       },
-      '404': {
-        description: 'User not found',
-      },
     },
   };
 
-  async handle(c: Context<{ Bindings: Env }>) {
-    const { user_id } = c.req.param();
+  async handle(c: APIContext<GetCredentialsEnv>) {
+    const user_id = c.req.param('user_id');
+    const request: GetCredentialsRequest = { user_id };
 
-    const key = await c.env.AES_ENCRYPTION_KEY_SECRET.get();
+    try {
+      const response = await this.handleRequest(request, c.env as Env, c);
+      return c.json(response);
+    } catch (error: unknown) {
+      if (error instanceof BadRequestError && error.message.includes('User not found')) {
+        return c.json({ Exception: { Type: 'NotFound', Message: 'User not found' } }, 404);
+      }
+      throw error;
+    }
+  }
+
+  protected async handleRequest(
+    request: GetCredentialsRequest,
+    env: Env,
+    cxt: APIContext<GetCredentialsEnv>,
+  ): Promise<GetCredentialsResponse> {
+    VoidUtil.void(cxt);
+    const key = await env.AES_ENCRYPTION_KEY_SECRET.get();
     if (!key) {
-      return c.json({ error: 'AES key not found. Please generate a key first.' }, 500);
+      throw new InternalServerError('AES key not found. Please generate a key first.');
     }
 
-    const userDAO = new UserDAO(c.env.DB);
-    const user = await userDAO.getUserById(parseInt(user_id));
+    const userDAO = new UserDAO(env.DB);
+    const user = await userDAO.getUserById(parseInt(request.user_id));
 
     if (!user) {
-      return c.json({ error: 'User not found' }, 404);
+      throw new BadRequestError('User not found');
     }
 
     const email_address = await decryptData(user.encryptedEmailAddress, user.salt, key);
     const password = await decryptData(user.encryptedPassword, user.salt, key);
     const totp_key = await decryptData(user.encryptedTotpKey, user.salt, key);
 
-    return c.json({
+    return {
       email_address,
       password,
       totp_key,
-    });
+    };
   }
 }

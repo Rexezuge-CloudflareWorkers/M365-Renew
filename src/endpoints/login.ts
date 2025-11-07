@@ -1,8 +1,21 @@
-import { OpenAPIRoute } from 'chanfana';
-import { Context } from 'hono';
-import { M365LoginUtil } from '../utils';
+import { IAPIRoute, IRequest, IResponse, IEnv, APIContext } from './IAPIRoute';
+import { M365LoginUtil } from '@/utils';
+import { VoidUtil } from '@/utils';
 
-export class LoginRoute extends OpenAPIRoute {
+interface LoginRequest extends IRequest {
+  email_address: string;
+  password: string;
+  totp_key: string;
+}
+
+interface LoginResponse extends IResponse {
+  success: boolean;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+interface LoginEnv extends IEnv {}
+
+export class LoginRoute extends IAPIRoute<LoginRequest, LoginResponse, LoginEnv> {
   schema = {
     tags: ['Authentication'],
     summary: 'M365 Login',
@@ -11,11 +24,11 @@ export class LoginRoute extends OpenAPIRoute {
       content: {
         'application/json': {
           schema: {
-            type: 'object',
+            type: 'object' as const,
             properties: {
-              email_address: { type: 'string', format: 'email' },
-              password: { type: 'string' },
-              totp_key: { type: 'string' },
+              email_address: { type: 'string' as const, format: 'email' as const },
+              password: { type: 'string' as const },
+              totp_key: { type: 'string' as const },
             },
             required: ['email_address', 'password', 'totp_key'],
           },
@@ -28,9 +41,9 @@ export class LoginRoute extends OpenAPIRoute {
         content: {
           'application/json': {
             schema: {
-              type: 'object',
+              type: 'object' as const,
               properties: {
-                success: { type: 'boolean' },
+                success: { type: 'boolean' as const },
               },
             },
           },
@@ -39,13 +52,9 @@ export class LoginRoute extends OpenAPIRoute {
     },
   };
 
-  async handle(c: Context<{ Bindings: Env }>) {
-    const { email_address, password, totp_key } = await c.req.json();
-
-    const success = await M365LoginUtil.login(c.env.BROWSER, c.env.TOTP_GENERATOR, email_address, password, totp_key);
-
-    return c.json({
-      success,
-    });
+  protected async handleRequest(request: LoginRequest, env: Env, cxt: APIContext<LoginEnv>): Promise<LoginResponse> {
+    VoidUtil.void(cxt);
+    const success = await M365LoginUtil.login(env.BROWSER, env.TOTP_GENERATOR, request.email_address, request.password, request.totp_key);
+    return { success };
   }
 }

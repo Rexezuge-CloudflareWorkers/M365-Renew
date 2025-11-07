@@ -1,10 +1,24 @@
-import { OpenAPIRoute } from 'chanfana';
-import { Context } from 'hono';
-import { encryptData } from '../crypto/aes-gcm';
-import { Env } from '../interfaces';
-import { UserDAO } from '../dao';
+import { IAPIRoute, IRequest, IResponse, IEnv, APIContext } from './IAPIRoute';
+import { encryptData } from '@/crypto/aes-gcm';
+import { UserDAO } from '@/dao';
+import { InternalServerError } from '@/error';
+import { VoidUtil } from '@/utils';
 
-export class StoreCredentialsRoute extends OpenAPIRoute {
+interface StoreCredentialsRequest extends IRequest {
+  email_address: string;
+  password: string;
+  totp_key: string;
+}
+
+interface StoreCredentialsResponse extends IResponse {
+  success: boolean;
+  user_id: number;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+interface StoreCredentialsEnv extends IEnv {}
+
+export class StoreCredentialsRoute extends IAPIRoute<StoreCredentialsRequest, StoreCredentialsResponse, StoreCredentialsEnv> {
   schema = {
     tags: ['Credentials'],
     summary: 'Store User Credentials',
@@ -13,11 +27,11 @@ export class StoreCredentialsRoute extends OpenAPIRoute {
       content: {
         'application/json': {
           schema: {
-            type: 'object',
+            type: 'object' as const,
             properties: {
-              email_address: { type: 'string', format: 'email' },
-              password: { type: 'string' },
-              totp_key: { type: 'string' },
+              email_address: { type: 'string' as const, format: 'email' as const },
+              password: { type: 'string' as const },
+              totp_key: { type: 'string' as const },
             },
             required: ['email_address', 'password', 'totp_key'],
           },
@@ -30,10 +44,10 @@ export class StoreCredentialsRoute extends OpenAPIRoute {
         content: {
           'application/json': {
             schema: {
-              type: 'object',
+              type: 'object' as const,
               properties: {
-                success: { type: 'boolean' },
-                user_id: { type: 'number' },
+                success: { type: 'boolean' as const },
+                user_id: { type: 'number' as const },
               },
             },
           },
@@ -42,27 +56,30 @@ export class StoreCredentialsRoute extends OpenAPIRoute {
     },
   };
 
-  async handle(c: Context<{ Bindings: Env }>) {
-    const { email_address, password, totp_key } = await c.req.json();
-
-    const key = await c.env.AES_ENCRYPTION_KEY_SECRET.get();
+  protected async handleRequest(
+    request: StoreCredentialsRequest,
+    env: Env,
+    cxt: APIContext<StoreCredentialsEnv>,
+  ): Promise<StoreCredentialsResponse> {
+    VoidUtil.void(cxt);
+    const key = await env.AES_ENCRYPTION_KEY_SECRET.get();
     if (!key) {
-      return c.json({ error: 'AES key not found. Please generate a key first.' }, 500);
+      throw new InternalServerError('AES key not found. Please generate a key first.');
     }
 
     const iv = crypto.getRandomValues(new Uint8Array(12));
     const ivBase64 = btoa(String.fromCharCode(...iv));
 
-    const encryptedEmail = await encryptData(email_address, key, ivBase64);
-    const encryptedPassword = await encryptData(password, key, ivBase64);
-    const encryptedTotpKey = await encryptData(totp_key, key, ivBase64);
+    const encryptedEmail = await encryptData(request.email_address, key, ivBase64);
+    const encryptedPassword = await encryptData(request.password, key, ivBase64);
+    const encryptedTotpKey = await encryptData(request.totp_key, key, ivBase64);
 
-    const userDAO = new UserDAO(c.env.DB);
+    const userDAO = new UserDAO(env.DB);
     const userId = await userDAO.createUser(encryptedEmail.encrypted, encryptedPassword.encrypted, encryptedTotpKey.encrypted, ivBase64);
 
-    return c.json({
+    return {
       success: true,
       user_id: userId,
-    });
+    };
   }
 }

@@ -1,9 +1,20 @@
-import { OpenAPIRoute } from 'chanfana';
-import { Context } from 'hono';
-import { generateAESGCMKey } from '../crypto/aes-gcm';
-import { Env } from '../interfaces';
+import { IAPIRoute, IRequest, IResponse, IEnv, APIContext } from './IAPIRoute';
+import { generateAESGCMKey } from '@/crypto/aes-gcm';
+import { VoidUtil } from '@/utils';
 
-export class GenerateKeyRoute extends OpenAPIRoute {
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+interface GenerateKeyRequest extends IRequest {}
+
+interface GenerateKeyResponse extends IResponse {
+  success: boolean;
+  message: string;
+  key: string;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+interface GenerateKeyEnv extends IEnv {}
+
+export class GenerateKeyRoute extends IAPIRoute<GenerateKeyRequest, GenerateKeyResponse, GenerateKeyEnv> {
   schema = {
     tags: ['Admin'],
     summary: 'Generate AES-GCM Key',
@@ -14,11 +25,11 @@ export class GenerateKeyRoute extends OpenAPIRoute {
         content: {
           'application/json': {
             schema: {
-              type: 'object',
+              type: 'object' as const,
               properties: {
-                success: { type: 'boolean' },
-                message: { type: 'string' },
-                key: { type: 'string' },
+                success: { type: 'boolean' as const },
+                message: { type: 'string' as const },
+                key: { type: 'string' as const },
               },
             },
           },
@@ -27,16 +38,17 @@ export class GenerateKeyRoute extends OpenAPIRoute {
     },
   };
 
-  async handle(c: Context<{ Bindings: Env }>) {
+  protected async handleRequest(request: GenerateKeyRequest, env: Env, cxt: APIContext<GenerateKeyEnv>): Promise<GenerateKeyResponse> {
+    VoidUtil.void(request, env, cxt);
     const key = await generateAESGCMKey();
 
     // Store the key in Secrets Store
-    // await c.env.AES_ENCRYPTION_KEY_SECRET.put( key);
+    // await env.AES_ENCRYPTION_KEY_SECRET.put(key);
 
-    return c.json({
+    return {
       success: true,
       message: 'AES-GCM key generated and stored successfully',
       key: key,
-    });
+    };
   }
 }
