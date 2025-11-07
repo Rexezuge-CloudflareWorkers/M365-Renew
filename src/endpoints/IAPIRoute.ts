@@ -1,11 +1,18 @@
 import { OpenAPIRoute } from 'chanfana';
 import { Context } from 'hono';
 import { DefaultInternalServerError, InternalServerError, IServiceError } from '@/error';
+import { VoidUtil } from '@/utils';
 
 abstract class IAPIRoute<TRequest extends IRequest, TResponse extends IResponse, TEnv extends IEnv> extends OpenAPIRoute {
   async handle(c: APIContext<TEnv>) {
     try {
-      const body: unknown = c.req.method === 'GET' ? {} : await c.req.json();
+      let body: unknown = {};
+      try {
+        body = await c.req.json();
+      } catch (_ignored: unknown) {
+        VoidUtil.void(_ignored);
+        body = {};
+      }
       const request: TRequest = body as TRequest;
       const response: TResponse = await this.handleRequest(request, c.env as TEnv, c);
       return c.json(response);
