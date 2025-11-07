@@ -79,7 +79,7 @@ class M365RenewWorker extends AbstractWorker {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         to: env.NOTIFICATION_EMAIL_ADDRESS,
-        subject: `M365 Processing - User ${user.userId}: ${status}`,
+        subject: `[M365 Renew] at ${new Date().toISOString()}: ${status}`,
         text: `User: ${user.userId}\nStatus: ${status}\nMessage: ${result_message}`,
       }),
     });
