@@ -53,7 +53,7 @@ class M365RenewWorker extends AbstractWorker {
       const credentialsResponse: Response = await env.SELF.fetch(`https://self.internal/api/internal/credentials/${user.userId}`);
       const credentials: unknown = await credentialsResponse.json();
 
-      const loginResponse: Response = await env.SELF.fetch('https://self.internal/api/auth/login', {
+      const loginResponse: Response = await fetch(`https://${env.LOGIN_ROUTE_INSTANCE_LOCATION}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(credentials),

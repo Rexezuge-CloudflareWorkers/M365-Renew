@@ -56,6 +56,6 @@
   },
   "vars": {
     "NOTIFICATION_EMAIL_ADDRESS": "user@example.com",
-    "LOGIN_ROUTE_INSTANCE_URL": "your-instance-location.example.com"
+    "LOGIN_ROUTE_INSTANCE_LOCATION": "your-instance-location.example.com"
   },
 }
