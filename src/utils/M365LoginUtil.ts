@@ -13,17 +13,18 @@ class M365LoginUtil {
     try {
       // Step 1: Navigate to login page
       await page.goto(this.M365_LOGIN_URL_NORMALIZED, { waitUntil: 'networkidle2' });
+      console.log('➡️ Opened the login page.');
 
       // Step 2: Enter email
       await page.type('input[type="email"]', email, { delay: 50 });
       await page.keyboard.press('Enter');
-      console.log("➡️ Entered email address into the browser.")
+      console.log('➡️ Entered email address into the browser.');
       await SleepUtil.sleepMs(300);
 
       // Step 3: Enter password
       await page.type('input[type="password"]', password, { delay: 50 });
       await page.keyboard.press('Enter');
-      console.log("➡️ Entered password into the browser.")
+      console.log('➡️ Entered password into the browser.');
       await SleepUtil.sleepMs(300);
 
       // Step 4: Generate and enter TOTP
@@ -39,7 +40,7 @@ class M365LoginUtil {
 
       await page.type('input[name="otc"]', otp, { delay: 50 });
       await page.keyboard.press('Enter');
-      console.log("➡️ Entered otp into the browser.")
+      console.log('➡️ Entered otp into the browser.');
       await SleepUtil.sleepMs(500);
 
       // Step 5: Handle post-login confirmation (e.g., "Stay signed in?")
@@ -47,7 +48,7 @@ class M365LoginUtil {
       if (await page.$(staySignedInSelector)) {
         await page.click(staySignedInSelector);
       }
-      console.log("➡️ Selected \"No\" to \"Stay signed in?\"")
+      console.log('➡️ Selected "No" to "Stay signed in?"');
 
       await SleepUtil.sleep(2);
 
