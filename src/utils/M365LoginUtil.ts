@@ -7,7 +7,7 @@ class M365LoginUtil {
 
   protected static M365_LOGIN_URL_NORMALIZED: string = new URL(this.M365_LOGIN_URL).toString();
 
-  public static async login(_browser: Fetcher, totpGenerator: Fetcher, email: string, password: string, totpKey: string): Promise<boolean> {
+  public static async login(email: string, password: string, totpKey: string): Promise<boolean> {
     const browserInstance: Browser = await puppeteer.launch({
       headless: true,
       executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,

@@ -52,18 +52,12 @@ export class LoginRoute extends IAPIRoute<LoginRequest, LoginResponse, LoginEnv>
     },
   };
 
-  protected async handleRequest(request: LoginRequest, env: Env, _ctx: APIContext<LoginEnv>): Promise<LoginResponse> {
+  protected async handleRequest(request: LoginRequest, _env: Env, _ctx: APIContext<LoginEnv>): Promise<LoginResponse> {
     if (typeof navigator !== 'undefined' && navigator.userAgent === 'Cloudflare-Workers') {
       throw new MethodNotAllowedError('This route is not allowed on Cloudflare Workers.');
     }
 
-    const success: boolean = await M365LoginUtil.login(
-      env.BROWSER,
-      env.TOTP_GENERATOR,
-      request.email_address,
-      request.password,
-      request.totp_key,
-    );
+    const success: boolean = await M365LoginUtil.login(request.email_address, request.password, request.totp_key);
     return { success };
   }
 }
