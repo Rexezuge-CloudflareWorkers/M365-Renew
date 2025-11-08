@@ -10,6 +10,7 @@
     "prettier": "prettier --write .",
     "lint": "eslint --ext .ts,.tsx --fix .",
     "tsc": "tsc --noemit",
+    "buildServer":"esbuild src/server.ts --bundle --platform=node --target=node22 --minify --outfile=dist/server.js --sourcemap",
     "dev": "wrangler dev",
     "devRemote": "wrangler dev --remote",
     "test": "vitest --run || 1"
