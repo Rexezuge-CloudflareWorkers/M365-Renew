@@ -29,6 +29,8 @@ jobs:
           if [ ! -f "wrangler.jsonc" ]; then
             echo "${WRANGLER_JSONC}" > wrangler.jsonc
           fi
+        env:
+          WRANGLER_JSONC: ${{ vars.WRANGLER_JSONC }}
 
       - name: Deploy with Wrangler
         run: npm run deploy
