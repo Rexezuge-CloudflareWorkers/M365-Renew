@@ -89,6 +89,8 @@ class M365LoginUtil {
 
       if (loginSuccess && !loginError) {
         console.log('✅ Sign-in was successful');
+      } else {
+        console.log('❌ Sign-in was failed');
       }
       return loginSuccess && !loginError;
     } catch (error) {
