@@ -51,7 +51,18 @@ class M365LoginUtil {
       console.log('➡️ Entered OTP into the browser.');
       await SleepUtil.sleep(3);
 
-      // Step 5: Handle post-login confirmation (e.g., "Stay signed in?")
+      // Step 5: Accept the latest TOU
+      let currentUrl: string = page.url();
+      if (currentUrl.startsWith('https://account.live.com/tou/accrue')) {
+        const acceptTouSelector: string = '[data-testid="primaryButton"]';
+        if (await page.$(acceptTouSelector)) {
+          await page.click(acceptTouSelector);
+        }
+        console.log('➡️ Selected "Yes" to "We\'re updating our terms"');
+        await SleepUtil.sleep(3);
+      }
+
+      // Step 6: Handle post-login confirmation (e.g., "Stay signed in?")
       const staySignedInSelector: string = '[data-testid="secondaryButton"]';
       if (await page.$(staySignedInSelector)) {
         await page.click(staySignedInSelector);
@@ -60,12 +71,12 @@ class M365LoginUtil {
 
       await SleepUtil.sleep(5);
 
-      // Step 6: Verify login success
+      // Step 7: Verify login success
       // You can check for:
       // - A redirect URL (e.g., Microsoft 365 home page)
       // - Specific elements visible only after login
       // - The absence of an error message
-      const currentUrl: string = page.url();
+      currentUrl = page.url();
 
       console.log('➡️ Returned to Url: ', currentUrl);
       // Example success indicators
@@ -75,7 +86,10 @@ class M365LoginUtil {
       const loginError: ElementHandle | null = await page.$('div.error, div[role="alert"]');
 
       await browserInstance.close();
-      console.log('✅ Sign-in was successful');
+
+      if (loginSuccess && !loginError) {
+        console.log('✅ Sign-in was successful');
+      }
       return loginSuccess && !loginError;
     } catch (error) {
       console.error('Login process failed:', error);
