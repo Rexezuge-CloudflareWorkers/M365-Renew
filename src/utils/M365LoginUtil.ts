@@ -16,13 +16,13 @@ class M365LoginUtil {
       console.log('➡️ Opened the login page.');
 
       // Step 2: Enter email
-      await page.type('input[type="email"]', email, { delay: 50 });
+      await page.type('input[type="email"]', email, { delay: 0 });
       await page.keyboard.press('Enter');
       console.log('➡️ Entered email address into the browser.');
       await SleepUtil.sleepMs(300);
 
       // Step 3: Enter password
-      await page.type('input[type="password"]', password, { delay: 50 });
+      await page.type('input[type="password"]', password, { delay: 0 });
       await page.keyboard.press('Enter');
       console.log('➡️ Entered password into the browser.');
       await SleepUtil.sleepMs(300);
