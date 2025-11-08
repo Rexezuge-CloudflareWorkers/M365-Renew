@@ -17,12 +17,12 @@ class M365LoginUtil {
       // Step 2: Enter email
       await page.type('input[type="email"]', email, { delay: 50 });
       await page.keyboard.press('Enter');
-      await SleepUtil.sleep(1);
+      await SleepUtil.sleepMs(200);
 
       // Step 3: Enter password
       await page.type('input[type="password"]', password, { delay: 50 });
       await page.keyboard.press('Enter');
-      await SleepUtil.sleep(1);
+      await SleepUtil.sleepMs(200);
 
       // Step 4: Generate and enter TOTP
       const totpUrl = `https://totp-generator.internal/generate-totp?key=${totpKey}&digits=6&period=30&algorithm=SHA-1`;
@@ -37,7 +37,7 @@ class M365LoginUtil {
 
       await page.type('input[name="otc"]', otp, { delay: 50 });
       await page.keyboard.press('Enter');
-      await SleepUtil.sleep(3);
+      await SleepUtil.sleepMs(400);
 
       // Step 5: Handle post-login confirmation (e.g., "Stay signed in?")
       const staySignedInSelector: string = '[data-testid="secondaryButton"]';
@@ -45,7 +45,7 @@ class M365LoginUtil {
         await page.click(staySignedInSelector);
       }
 
-      await SleepUtil.sleep(5);
+      await SleepUtil.sleep(1);
 
       // Step 6: Verify login success
       // You can check for:
