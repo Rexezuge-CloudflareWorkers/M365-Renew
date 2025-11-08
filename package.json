@@ -8,9 +8,9 @@
     "deploy": "wrangler deploy --dry-run",
     "postdeploy": "wrangler deploy",
     "prettier": "prettier --write .",
-    "lint": "eslint --ext .ts,.tsx --fix .",
+    "lint": "eslint --ignore-pattern dist/ --ext .ts,.tsx --fix .",
     "tsc": "tsc --noemit",
-    "buildServer":"esbuild src/server.ts --bundle --platform=node --target=node22 --minify --outfile=dist/server.js --sourcemap",
+    "buildServer": "esbuild src/server.ts --bundle --platform=node --target=node24 --minify --outfile=dist/server.js --sourcemap",
     "dev": "wrangler dev",
     "devRemote": "wrangler dev --remote",
     "test": "vitest --run || 1"

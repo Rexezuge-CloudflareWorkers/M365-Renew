@@ -10,7 +10,8 @@ const server = createServer(async (req, res) => {
     method: req.method,
     headers: req.headers as HeadersInit,
     body: req.method !== 'GET' && req.method !== 'HEAD' ? (req as unknown as BodyInit) : null,
-  });
+    duplex: 'half',
+  } as RequestInit);
 
   try {
     const response = await worker.fetch(request, process.env as unknown as Env, {} as ExecutionContext);
